@@ -1,13 +1,13 @@
 import React from "react";
 import { TableRow, TableCell } from "@material-ui/core";
-import { IRaceTableEl } from "../../types/race";
+import { RaceRowElement } from "../../types/race";
 
 interface RowProps {
-  raceData: IRaceTableEl;
+  race: RaceRowElement;
 }
 
-export const Row: React.FC<RowProps> = ({ raceData }) => {
-  const { meetingName, raceNum, start } = raceData;
+export const Row: React.FC<RowProps> = ({ race }) => {
+  const { meetingName, raceNum, start } = race;
   return (
     <TableRow>
       <TableCell>{meetingName}</TableCell>

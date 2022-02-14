@@ -5,15 +5,19 @@
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
-    "@testing-library/jest-dom": "^5.16.2",
+    "@material-ui/lab": "^4.0.0-alpha.60",
+    "@reduxjs/toolkit": "^1.7.2",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.4.0",
     "@types/node": "^16.11.24",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
+    "@types/react-redux": "^7.1.22",
+    "axios": "^0.25.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-redux": "^7.2.6",
     "react-scripts": "5.0.0",
     "sass": "^1.49.7",
     "typescript": "^4.5.5",
@@ -23,11 +27,18 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint \"**/*.{js,jsx,ts,tsx}\"",
+    "lint-fix": "npm run lint -- --fix"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm test",
+      "pre-commit": "lint-staged",
       "pre-push": "npm test"
     }
   },
@@ -50,6 +61,8 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.2",
+    "@types/redux-mock-store": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
     "eslint": "^7.32.0",
@@ -61,6 +74,8 @@
     "eslint-plugin-promise": "^5.2.0",
     "eslint-plugin-react": "^7.28.0",
     "husky": "^7.0.4",
-    "prettier": "^2.5.1"
+    "lint-staged": "^12.3.4",
+    "prettier": "^2.5.1",
+    "redux-mock-store": "^1.5.4"
   }
 }
