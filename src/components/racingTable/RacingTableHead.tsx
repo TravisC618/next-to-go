@@ -6,8 +6,8 @@ const RacingTableHead = () => {
     <TableHead>
       <TableRow>
         <TableCell>Meeting</TableCell>
-        <TableCell>Race</TableCell>
-        <TableCell>Start in</TableCell>
+        <TableCell align="right">Race</TableCell>
+        <TableCell align="right">Start in</TableCell>
       </TableRow>
     </TableHead>
   );

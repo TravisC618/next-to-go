@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableContainer from "@material-ui/core/TableContainer";
+import { createStyles, makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import RacingTableHead from "./RacingTableHead";
 import { Row } from "./Row";
@@ -11,7 +12,24 @@ import { selectNextFiveRacesState } from "../../redux/racesSlice";
 import { useAppSelector, useInterval, useRace } from "../../hooks";
 import { MenuBar } from "./MenuBar";
 
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      maxWidth: "780px",
+      margin: "auto",
+      flex: 1,
+    },
+    table: {
+      tableLayout: "fixed",
+    },
+  })
+);
+
 export const RacingTable: React.FC = () => {
+  // styling
+  const classes = useStyles();
+
+  // race handlers
   const { races, loading, error } = useAppSelector(selectNextFiveRacesState);
   const { loadRaces, updateTime } = useRace();
 
@@ -24,11 +42,11 @@ export const RacingTable: React.FC = () => {
   }, []);
 
   return (
-    <Paper>
+    <Paper className={classes.root}>
       <MenuBar />
       <TableContainer component={Paper}>
         {error && <ErrorAlert error={error} />}
-        <Table>
+        <Table className={classes.table}>
           <RacingTableHead />
           <TableBody>
             {loading ? (

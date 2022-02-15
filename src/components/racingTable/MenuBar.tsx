@@ -1,4 +1,6 @@
 import React from "react";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { grey } from "@material-ui/core/colors";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormGroup from "@material-ui/core/FormGroup";
@@ -11,7 +13,35 @@ import Menu from "@material-ui/core/Menu";
 import { useAppSelector, useRace } from "../../hooks";
 import { RootState } from "../../redux/store";
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    toolbar: {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.secondary.main,
+    },
+    title: {
+      flex: "1 1 100%",
+    },
+    filterBtn: {
+      color: theme.palette.secondary.main,
+    },
+    filterGroup: {
+      "& .MuiFormControlLabel-root": {
+        margin: 0,
+        paddingLeft: theme.spacing(2), // 8 * 2
+        paddingRight: theme.spacing(2),
+        "&:hover": {
+          backgroundColor: grey[100],
+        },
+      },
+    },
+  })
+);
+
 export const MenuBar: React.FC = () => {
+  // styling
+  const classes = useStyles();
+
   // menu
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -32,11 +62,15 @@ export const MenuBar: React.FC = () => {
     updateFilter({ [event.target.name]: event.target.checked });
 
   return (
-    <Toolbar>
-      <Typography variant="h6" component="div">
+    <Toolbar className={classes.toolbar}>
+      <Typography className={classes.title} variant="h6" component="div">
         Next to go
       </Typography>
-      <Button onClick={handleClick} startIcon={<FilterListIcon />}>
+      <Button
+        onClick={handleClick}
+        className={classes.filterBtn}
+        startIcon={<FilterListIcon />}
+      >
         Filter
       </Button>
       <Menu
@@ -56,7 +90,7 @@ export const MenuBar: React.FC = () => {
         }}
       >
         <FormControl component="fieldset">
-          <FormGroup>
+          <FormGroup className={classes.filterGroup}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -64,6 +98,7 @@ export const MenuBar: React.FC = () => {
                   onChange={handleChange}
                   name="greyhound"
                   data-testid="greyhound"
+                  color="primary"
                 />
               }
               label="Greyhound Racing"
@@ -74,6 +109,7 @@ export const MenuBar: React.FC = () => {
                   checked={harness}
                   onChange={handleChange}
                   name="harness"
+                  color="primary"
                 />
               }
               label="Harness Racing"
@@ -84,6 +120,7 @@ export const MenuBar: React.FC = () => {
                   checked={horse}
                   onChange={handleChange}
                   name="horse"
+                  color="primary"
                 />
               }
               label="Horse Racing"
