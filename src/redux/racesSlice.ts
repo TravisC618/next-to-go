@@ -1,8 +1,9 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getRaces } from "../api/races";
-import { Race, RaceRowElement } from "../types/race";
+import { Race } from "../types/race";
 import { RootState } from "./store";
-import { getNextRaces, normalisedRaceRowElements } from "../utils/races";
+import { getDiffInMills, getNextRaces, sortRacesByStart } from "../utils/races";
+import { OUTDATED_TIMING } from "../constants/races";
 
 export const fetchRaces = createAsyncThunk(
   "races/getRaces",
@@ -20,9 +21,10 @@ export const fetchRaces = createAsyncThunk(
 
 export interface RacesState {
   races: Race[];
-  nextFiveRaces: RaceRowElement[];
+  nextFiveRaces: Race[];
   loadingRaces: boolean;
   loadingRacesError: string | undefined;
+  currentTimeInMills: number;
 }
 
 const initialState: RacesState = {
@@ -30,12 +32,40 @@ const initialState: RacesState = {
   nextFiveRaces: [],
   loadingRaces: false,
   loadingRacesError: undefined,
+  currentTimeInMills: Date.now(),
 };
 
 export const racesSlice = createSlice({
   name: "races",
   initialState,
-  reducers: {},
+  reducers: {
+    updateNextFiveRaces: (state, action: PayloadAction<Race[]>) => {
+      state.nextFiveRaces = action.payload;
+    },
+    updateCurrentTime: (state, action: PayloadAction<number>) => {
+      const now = action.payload;
+      state.currentTimeInMills = now;
+
+      // check if any race has started a min
+      const outdatedIds = state.nextFiveRaces.reduce(
+        (ids: Array<Race["race_id"]>, race) => {
+          const diff = getDiffInMills(race.advertised_start.seconds, now);
+          if (diff < OUTDATED_TIMING) {
+            ids.push(race.race_id);
+          }
+          return ids;
+        },
+        []
+      );
+
+      // update next races and absort outdated races in current race list
+      const totalAbort = outdatedIds.length;
+      if (totalAbort) {
+        state.nextFiveRaces = state.races.slice(totalAbort, 5 + totalAbort);
+        state.races.splice(0, totalAbort);
+      }
+    },
+  },
   // for reducing asyncThunk
   extraReducers: (builder) => {
     builder
@@ -47,10 +77,8 @@ export const racesSlice = createSlice({
         state.loadingRaces = false;
       })
       .addCase(fetchRaces.fulfilled, (state, action) => {
-        const races = action.payload;
-        const nextFiveRaces: RaceRowElement[] = normalisedRaceRowElements(
-          getNextRaces(races, 5)
-        );
+        const races = sortRacesByStart(action.payload);
+        const nextFiveRaces: Race[] = getNextRaces(races, 5);
         return {
           ...state,
           races,
@@ -60,6 +88,8 @@ export const racesSlice = createSlice({
       });
   },
 });
+
+export const { updateNextFiveRaces, updateCurrentTime } = racesSlice.actions;
 
 export const selectNextFiveRacesState = (state: RootState) => ({
   races: state.races.nextFiveRaces,

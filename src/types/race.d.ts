@@ -8,13 +8,6 @@ export type Race = {
   };
 };
 
-export type RaceRowElement = {
-  raceId: Race["race_id"];
-  meetingName: Race["meeting_name"];
-  raceNum: Race["race_number"];
-  start: Race["advertised_start"]["seconds"];
-};
-
 type RaceData = {
   next_to_go_ids: Race["race_id"][];
   race_summaries: Record<Race["race_id"], Race>;

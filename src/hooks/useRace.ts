@@ -1,5 +1,10 @@
 import { useMemo } from "react";
-import { fetchRaces } from "../redux/racesSlice";
+import {
+  fetchRaces,
+  updateCurrentTime,
+  updateNextFiveRaces,
+} from "../redux/racesSlice";
+import { Race } from "../types/race";
 import { useAppDispatch } from "./redux";
 
 export const useRace = () => {
@@ -8,6 +13,9 @@ export const useRace = () => {
   return useMemo(
     () => ({
       loadRaces: () => dispatch(fetchRaces()),
+      updateTime: (currentTime: number) =>
+        dispatch(updateCurrentTime(currentTime)),
+      updateNextRaces: (races: Race[]) => dispatch(updateNextFiveRaces(races)),
     }),
     [dispatch]
   );

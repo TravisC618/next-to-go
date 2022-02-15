@@ -7,18 +7,20 @@ import Header from "./Header";
 import { Row } from "./Row";
 import { ErrorAlert } from "../ErrorAlert/ErrorAlert";
 import { LoadingTableRow } from "./LoadingTableRow";
-import { RaceRowElement } from "../../types/race";
 import { selectNextFiveRacesState } from "../../redux/racesSlice";
-import { useAppSelector, useRace } from "../../hooks";
+import { useAppSelector, useInterval, useRace } from "../../hooks";
 
 export const RacingTable: React.FC = () => {
   const { races, loading, error } = useAppSelector(selectNextFiveRacesState);
-  console.log("error: ", error);
-  const { loadRaces } = useRace();
+  const { loadRaces, updateTime } = useRace();
 
   useEffect(() => {
     loadRaces();
   }, [loadRaces]);
+
+  useInterval(() => {
+    updateTime(Date.now());
+  }, []);
 
   return (
     <TableContainer component={Paper}>
@@ -29,9 +31,7 @@ export const RacingTable: React.FC = () => {
           {loading ? (
             <LoadingTableRow />
           ) : (
-            races?.map((race: RaceRowElement) => (
-              <Row key={race.raceId} race={race} />
-            ))
+            races?.map((race) => <Row key={race["race_id"]} race={race} />)
           )}
         </TableBody>
       </Table>

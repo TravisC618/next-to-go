@@ -12,6 +12,7 @@ const initState: RacesState = {
   nextFiveRaces: [],
   loadingRaces: false,
   loadingRacesError: undefined,
+  currentTimeInMills: Date.now(),
 };
 
 // HACK: jest.mock is not allowed to reference any out-of-scope variables
