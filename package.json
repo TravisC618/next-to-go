@@ -29,18 +29,11 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\"",
-    "lint-fix": "npm run lint -- --fix"
+    "lint-fix": "npm run lint -- --fix",
+    "prepare": "husky install"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "npm test"
-    }
+    "*.{js,jsx,ts,tsx}": "eslint --cache --fix"
   },
   "eslintConfig": {
     "extends": [
