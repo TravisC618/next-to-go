@@ -49,10 +49,6 @@ export const racesSlice = createSlice({
   name: "races",
   initialState,
   reducers: {
-    updateNextFiveRaces: (state, action: PayloadAction<Race[]>) => {
-      const races = sortRacesByStart(action.payload);
-      state.nextFiveRaces = getNextRaces(races, 5);
-    },
     updateCategoryFilter: (
       state,
       action: PayloadAction<Partial<RacesState["categoryFilter"]>>
@@ -120,8 +116,7 @@ export const racesSlice = createSlice({
   },
 });
 
-export const { updateNextFiveRaces, updateCurrentTime, updateCategoryFilter } =
-  racesSlice.actions;
+export const { updateCurrentTime, updateCategoryFilter } = racesSlice.actions;
 
 export const selectNextFiveRacesState = (state: RootState) => ({
   races: state.races.nextFiveRaces,

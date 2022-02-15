@@ -4,6 +4,8 @@ export const START_INDICATOR = "NOW";
 
 export const OUTDATED_TIMING = -60000; // 1 min
 
+export const HIGHLIGHT_TIMING = 120000; // 2 mins
+
 export const REFETCH_SESSION = 180000; // 3 mins
 
 export const RACING_CATEGORIES: Record<RacingTypes, string> = {
