@@ -121,10 +121,7 @@ src
     
     Otherwise keep the time in shorter formate.
     
-    ![Highlight example](Next-to-go%20App%20c646295c22a844c495313d44ede16253/Untitled.png)
-    
-    Highlight example
-    
+    ![Highlight example](https://user-images.githubusercontent.com/57521170/154096867-39d5b0e4-4c8a-4be4-ae76-42b7d17c4a44.png)
 
 ## Additional Thinking
 
