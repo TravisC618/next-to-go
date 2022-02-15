@@ -1,5 +1,4 @@
-import Container from "@material-ui/core/Container";
 import React from "react";
-import { RacingTable } from "./racingTable/RacingTable";
+import { RacingTable } from "./RacingTable/RacingTable";
 
 export const Main: React.FC = () => <RacingTable />;
