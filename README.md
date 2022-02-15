@@ -173,6 +173,4 @@ Best practise on packages: **Importing & Exporting - use index file**
     
 5. Deployment 
     
-    Can be simply deployed into a CDN e.g. S3+Cloudfront. For future performance enhancement needs can be containerised and orchestrated into a container management service 
-    
-    e.g. Deploy the app to ecs/k8s with docker containers to automatically handle scalability based on the number of traffics.
+    Can be simply deployed into a CDN e.g. S3+Cloudfront. For future performance enhancement needs can be containerised and orchestrated into a container management service.
