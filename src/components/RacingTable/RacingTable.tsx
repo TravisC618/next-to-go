@@ -11,6 +11,7 @@ import { LoadingTableRow } from "./LoadingTableRow";
 import { selectNextFiveRacesState } from "../../redux/racesSlice";
 import { useAppSelector, useInterval, useRace } from "../../hooks";
 import { MenuBar } from "./MenuBar";
+import { REFETCH_SESSION } from "../../constants/races";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -30,7 +31,9 @@ export const RacingTable: React.FC = () => {
   const classes = useStyles();
 
   // race handlers
-  const { races, loading, error } = useAppSelector(selectNextFiveRacesState);
+  const { races, loading, error, lastFetchAt } = useAppSelector(
+    selectNextFiveRacesState
+  );
   const { loadRaces, updateTime } = useRace();
 
   useEffect(() => {
@@ -38,6 +41,11 @@ export const RacingTable: React.FC = () => {
   }, [loadRaces]);
 
   useInterval(() => {
+    const now = Date.now();
+    // refetch every 3 mins
+    if (now - lastFetchAt > REFETCH_SESSION) {
+      loadRaces();
+    }
     updateTime(Date.now());
   }, []);
 

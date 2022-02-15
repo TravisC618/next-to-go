@@ -13,6 +13,7 @@ const initState: RacesState = {
   loadingRaces: false,
   loadingRacesError: undefined,
   currentTimeInMills: Date.now(),
+  lastFetchAt: Date.now(),
   categoryFilter: {
     greyhound: true,
     harness: true,

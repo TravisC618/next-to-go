@@ -2,7 +2,9 @@ import { RacingTypes } from "../types/race";
 
 export const START_INDICATOR = "NOW";
 
-export const OUTDATED_TIMING = -60000;
+export const OUTDATED_TIMING = -60000; // 1 min
+
+export const REFETCH_SESSION = 180000; // 3 mins
 
 export const RACING_CATEGORIES: Record<RacingTypes, string> = {
   greyhound: "9daef0d7-bf3c-4f50-921d-8e818c60fe61",

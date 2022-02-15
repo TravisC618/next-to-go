@@ -5,33 +5,28 @@ import { RootState } from "./store";
 import { getNextRaces, getOutdatedIds, sortRacesByStart } from "../utils/races";
 import { RACING_CATEGORIES } from "../constants/races";
 
-interface FetchRacesConfig {
-  count?: number;
-  hiddentFetch?: boolean;
-}
-
-export const fetchRaces = createAsyncThunk<
-  Race[],
-  FetchRacesConfig | undefined
->("races/getRaces", async (options, { dispatch, rejectWithValue }) => {
-  const { count = 10, hiddentFetch = false } = options || {};
-  try {
-    const response = await getRaces(count);
-    const { race_summaries = {} } = response?.data?.data || {};
-    const races = Object.values(race_summaries);
-    return races;
-  } catch (error) {
-    return rejectWithValue(error);
+export const fetchRaces = createAsyncThunk<Race[]>(
+  "races/getRaces",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getRaces();
+      const { race_summaries = {} } = response?.data?.data || {};
+      const races = Object.values(race_summaries);
+      return races;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
   }
-});
+);
 
 export interface RacesState {
   races: Race[];
   nextFiveRaces: Race[];
   loadingRaces: boolean;
   loadingRacesError: string | undefined;
-  currentTimeInMills: number;
   categoryFilter: Record<RacingTypes, boolean>;
+  currentTimeInMills: number;
+  lastFetchAt: number;
 }
 
 const initialFilter: Record<RacingTypes, boolean> = {
@@ -45,8 +40,9 @@ const initialState: RacesState = {
   nextFiveRaces: [],
   loadingRaces: true,
   loadingRacesError: undefined,
-  currentTimeInMills: Date.now(),
   categoryFilter: initialFilter,
+  currentTimeInMills: Date.now(),
+  lastFetchAt: Date.now(),
 };
 
 export const racesSlice = createSlice({
@@ -118,6 +114,7 @@ export const racesSlice = createSlice({
           races,
           nextFiveRaces,
           loadingRaces: false,
+          lastFetchAt: Date.now(),
         };
       });
   },
@@ -130,6 +127,7 @@ export const selectNextFiveRacesState = (state: RootState) => ({
   races: state.races.nextFiveRaces,
   loading: state.races.loadingRaces,
   error: state.races.loadingRacesError,
+  lastFetchAt: state.races.lastFetchAt,
 });
 
 export default racesSlice.reducer;
