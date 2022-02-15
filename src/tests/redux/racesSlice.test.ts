@@ -13,6 +13,11 @@ const initState: RacesState = {
   loadingRaces: false,
   loadingRacesError: undefined,
   currentTimeInMills: Date.now(),
+  categoryFilter: {
+    greyhound: true,
+    harness: true,
+    horse: true,
+  },
 };
 
 // HACK: jest.mock is not allowed to reference any out-of-scope variables

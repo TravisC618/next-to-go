@@ -1,23 +1,29 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getRaces } from "../api/races";
-import { Race } from "../types/race";
+import { Race, RacingTypes } from "../types/race";
 import { RootState } from "./store";
-import { getDiffInMills, getNextRaces, sortRacesByStart } from "../utils/races";
-import { OUTDATED_TIMING } from "../constants/races";
+import { getNextRaces, getOutdatedIds, sortRacesByStart } from "../utils/races";
+import { RACING_CATEGORIES } from "../constants/races";
 
-export const fetchRaces = createAsyncThunk(
-  "races/getRaces",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await getRaces();
-      const { race_summaries = {} } = response?.data?.data || {};
-      const races = Object.values(race_summaries);
-      return races;
-    } catch (error) {
-      return rejectWithValue(error);
-    }
+interface FetchRacesConfig {
+  count?: number;
+  hiddentFetch?: boolean;
+}
+
+export const fetchRaces = createAsyncThunk<
+  Race[],
+  FetchRacesConfig | undefined
+>("races/getRaces", async (options, { dispatch, rejectWithValue }) => {
+  const { count = 10, hiddentFetch = false } = options || {};
+  try {
+    const response = await getRaces(count);
+    const { race_summaries = {} } = response?.data?.data || {};
+    const races = Object.values(race_summaries);
+    return races;
+  } catch (error) {
+    return rejectWithValue(error);
   }
-);
+});
 
 export interface RacesState {
   races: Race[];
@@ -25,14 +31,22 @@ export interface RacesState {
   loadingRaces: boolean;
   loadingRacesError: string | undefined;
   currentTimeInMills: number;
+  categoryFilter: Record<RacingTypes, boolean>;
 }
+
+const initialFilter: Record<RacingTypes, boolean> = {
+  greyhound: true,
+  harness: true,
+  horse: true,
+};
 
 const initialState: RacesState = {
   races: [],
   nextFiveRaces: [],
-  loadingRaces: false,
+  loadingRaces: true,
   loadingRacesError: undefined,
   currentTimeInMills: Date.now(),
+  categoryFilter: initialFilter,
 };
 
 export const racesSlice = createSlice({
@@ -40,23 +54,43 @@ export const racesSlice = createSlice({
   initialState,
   reducers: {
     updateNextFiveRaces: (state, action: PayloadAction<Race[]>) => {
-      state.nextFiveRaces = action.payload;
+      const races = sortRacesByStart(action.payload);
+      state.nextFiveRaces = getNextRaces(races, 5);
+    },
+    updateCategoryFilter: (
+      state,
+      action: PayloadAction<Partial<RacesState["categoryFilter"]>>
+    ) => {
+      // ensure at least one filter selected
+      const input: Record<RacingTypes, boolean> = {
+        ...state.categoryFilter,
+        ...action.payload,
+      };
+      const noSelect = !Object.values(input).some((isSelected) => isSelected);
+      const toUpdateFilter = noSelect ? initialFilter : input;
+
+      // get filtered races
+      const filteredKeys = (
+        Object.entries(toUpdateFilter) as [RacingTypes, boolean][]
+      ).reduce(
+        (keys: RacingTypes[], [categoryKey, isFilter]) =>
+          isFilter ? [...keys, categoryKey] : keys,
+        []
+      );
+      const categoryIds = filteredKeys.map((key) => RACING_CATEGORIES[key]);
+      const filteredRaces = state.races.filter((race) =>
+        categoryIds.includes(race.category_id)
+      );
+
+      state.nextFiveRaces = getNextRaces(sortRacesByStart(filteredRaces), 5);
+      state.categoryFilter = toUpdateFilter;
     },
     updateCurrentTime: (state, action: PayloadAction<number>) => {
       const now = action.payload;
       state.currentTimeInMills = now;
 
       // check if any race has started a min
-      const outdatedIds = state.nextFiveRaces.reduce(
-        (ids: Array<Race["race_id"]>, race) => {
-          const diff = getDiffInMills(race.advertised_start.seconds, now);
-          if (diff < OUTDATED_TIMING) {
-            ids.push(race.race_id);
-          }
-          return ids;
-        },
-        []
-      );
+      const outdatedIds = getOutdatedIds(state.nextFiveRaces, now);
 
       // update next races and absort outdated races in current race list
       const totalAbort = outdatedIds.length;
@@ -78,7 +112,7 @@ export const racesSlice = createSlice({
       })
       .addCase(fetchRaces.fulfilled, (state, action) => {
         const races = sortRacesByStart(action.payload);
-        const nextFiveRaces: Race[] = getNextRaces(races, 5);
+        const nextFiveRaces = getNextRaces(races, 5);
         return {
           ...state,
           races,
@@ -89,7 +123,8 @@ export const racesSlice = createSlice({
   },
 });
 
-export const { updateNextFiveRaces, updateCurrentTime } = racesSlice.actions;
+export const { updateNextFiveRaces, updateCurrentTime, updateCategoryFilter } =
+  racesSlice.actions;
 
 export const selectNextFiveRacesState = (state: RootState) => ({
   races: state.races.nextFiveRaces,

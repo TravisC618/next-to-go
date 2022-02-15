@@ -16,3 +16,5 @@ type RaceData = {
 export type RaceResponse = {
   data: RaceData;
 };
+
+export type RacingTypes = "greyhound" | "harness" | "horse";

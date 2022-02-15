@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
-import Header from "../../components/racingTable/Header";
+import RacingTableHead from "../../components/racingTable/RacingTableHead";
 
 describe("Racing Table Header", () => {
   it("renders cells", () => {
-    render(<Header />);
+    render(<RacingTableHead />);
     const meetingCellElement = screen.getByText("Meeting");
     const raceCellElement = screen.getByText("Race");
     const startInCellElement = screen.getByText("Start in");

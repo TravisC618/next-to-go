@@ -1,7 +1,7 @@
 import React from "react";
 import { TableHead, TableRow, TableCell } from "@material-ui/core";
 
-const Header = () => {
+const RacingTableHead = () => {
   return (
     <TableHead>
       <TableRow>
@@ -13,4 +13,4 @@ const Header = () => {
   );
 };
 
-export default React.memo(Header);
+export default React.memo(RacingTableHead);
